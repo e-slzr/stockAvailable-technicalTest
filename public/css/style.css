@@ -118,3 +118,41 @@ th.sorted-desc::after {
 .input-group {
     margin-bottom: 15px;
 }
+
+/* Estilos para filas clickeables */
+.product-row {
+    transition: background-color 0.2s ease;
+}
+
+.product-row:hover {
+    background-color: #e9f5ff !important;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Estilos para el modal de detalles */
+#productInfo {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+#productName {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#productCode {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}

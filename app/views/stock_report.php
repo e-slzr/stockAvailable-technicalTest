@@ -46,7 +46,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($stockData as $item): ?>
-                            <tr>
+                            <tr class="product-row" data-product-id="<?php echo htmlspecialchars((string)$item['productId']); ?>" data-product-name="<?php echo htmlspecialchars($item['name']); ?>" data-product-code="<?php echo htmlspecialchars($item['code']); ?>" style="cursor: pointer;">
                                 <td><?php echo htmlspecialchars((string)$item['productId']); ?></td>
                                 <td><?php echo htmlspecialchars($item['code']); ?></td>
                                 <td><?php echo htmlspecialchars($item['name']); ?></td>
@@ -83,6 +83,47 @@
             </div>
         <?php endif; ?>
     </div>
+    
+    <!-- Modal para mostrar detalles del producto -->
+    <div class="modal fade" id="productDetailsModal" tabindex="-1" role="dialog" aria-labelledby="productDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productDetailsModalLabel">Detalles del Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="productInfo" class="mb-3">
+                        <h6 id="productName"></h6>
+                        <p id="productCode"></p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="boxesTable">
+                            <thead>
+                                <tr>
+                                    <th>Box #</th>
+                                    <th>Last Transaction Date</th>
+                                    <th>Available Qty.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Los datos de las cajas se cargarán aquí dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noBoxesMessage" class="alert alert-info">
+                        <p>No hay cajas disponibles para este producto.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="public/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/main.js"></script>

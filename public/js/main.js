@@ -64,7 +64,129 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Manejar clics en las filas de productos para mostrar el modal
+    const productRows = document.querySelectorAll('.product-row');
+    productRows.forEach(row => {
+        row.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const productName = this.getAttribute('data-product-name');
+            const productCode = this.getAttribute('data-product-code');
+            
+            // Actualizar la información del producto en el modal
+            document.getElementById('productName').textContent = productName;
+            document.getElementById('productCode').textContent = `Código: ${productCode}`;
+            
+            // Limpiar la tabla de cajas
+            const boxesTableBody = document.querySelector('#boxesTable tbody');
+            boxesTableBody.innerHTML = '';
+            
+            // Mostrar indicador de carga
+            boxesTableBody.innerHTML = '<tr><td colspan="3" class="text-center">Cargando información de cajas...</td></tr>';
+            
+            // Mostrar el modal
+            $('#productDetailsModal').modal('show');
+            
+            // Obtener los datos de las cajas para este producto
+            fetchBoxesData(productId);
+        });
+    });
 });
+
+// Función para obtener los datos de las cajas de un producto
+function fetchBoxesData(productId) {
+    // Usamos nuestro endpoint local que actúa como proxy para evitar problemas de CORS
+    const apiUrl = `api/product-boxes.php?productId=${productId}`;
+    
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener datos del producto');
+            }
+            return response.json();
+        })
+        .then(productDetails => {
+            // Verificamos si el producto tiene cajas asociadas
+            if (productDetails && productDetails.boxes && productDetails.boxes.length > 0) {
+                // Transformamos los datos para que coincidan con nuestra estructura de tabla
+                const boxesData = productDetails.boxes.map(box => ({
+                    boxNumber: box.boxCode,
+                    location: `Box ID: ${box.boxId}`, // No tenemos ubicación en la respuesta, usamos el ID
+                    availableQuantity: box.quantity,
+                    lastTransactionDate: box.lastTransactionDate
+                }));
+                
+                updateBoxesTable(boxesData);
+            } else {
+                // Si no hay cajas, mostramos el mensaje de no hay datos
+                const boxesTableBody = document.querySelector('#boxesTable tbody');
+                boxesTableBody.innerHTML = '';
+                
+                const noBoxesMessage = document.getElementById('noBoxesMessage');
+                noBoxesMessage.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showBoxesError();
+        });
+}
+
+// Función para actualizar la tabla de cajas con los datos recibidos
+function updateBoxesTable(boxesData) {
+    const boxesTableBody = document.querySelector('#boxesTable tbody');
+    boxesTableBody.innerHTML = '';
+    
+    // Si no hay datos, mostramos un mensaje
+    if (!boxesData || boxesData.length === 0) {
+        const noBoxesMessage = document.getElementById('noBoxesMessage');
+        noBoxesMessage.style.display = 'block';
+        return;
+    }
+    
+    // Ocultamos el mensaje de error si estaba visible
+    const noBoxesMessage = document.getElementById('noBoxesMessage');
+    noBoxesMessage.style.display = 'none';
+    
+    // Agregamos los datos a la tabla
+    boxesData.forEach(box => {
+        const row = document.createElement('tr');
+        
+        // Formateamos la fecha si existe
+        let formattedDate = 'N/A';
+        if (box.lastTransactionDate) {
+            const date = new Date(box.lastTransactionDate);
+            formattedDate = date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        row.innerHTML = `
+            <td>${box.boxNumber || box.code || 'N/A'}</td>
+            <td>${formattedDate}</td>
+            <td>${box.availableQuantity !== undefined ? box.availableQuantity : 'N/A'}</td>
+        `;
+        boxesTableBody.appendChild(row);
+    });
+}
+
+// Función para mostrar un error en la tabla de cajas
+function showBoxesError() {
+    const boxesTableBody = document.querySelector('#boxesTable tbody');
+    const noBoxesMessage = document.getElementById('noBoxesMessage');
+    
+    // Ocultar la tabla
+    boxesTableBody.innerHTML = '';
+    
+    // Mostrar mensaje de error
+    noBoxesMessage.innerHTML = '<p>Error al cargar la información de las cajas.</p>';
+    noBoxesMessage.style.display = 'block';
+    noBoxesMessage.className = 'alert alert-danger';
+}
 
 // Función para ordenar la tabla
 function sortTable(table, columnIndex) {
