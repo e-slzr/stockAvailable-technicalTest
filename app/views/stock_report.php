@@ -10,6 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informe de Stock Disponible</title>
+    <link rel="stylesheet" href="public/css/bootstrap.min.css">
     <link rel="stylesheet" href="public/css/style.css">
 </head>
 <body>
@@ -28,7 +29,7 @@
                 <p>No hay datos de stock disponibles para mostrar.</p>
             </div>
         <?php else: ?>
-            <table>
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>Producto (Código)</th>
@@ -50,6 +51,8 @@
             </table>
         <?php endif; ?>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="public/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/main.js"></script>
 </body>
 </html>
